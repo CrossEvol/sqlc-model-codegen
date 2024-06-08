@@ -2,3 +2,4 @@ db.sqlite
 bin/
 .env
 gen/
+struct_metas.json
