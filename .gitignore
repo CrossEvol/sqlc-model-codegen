@@ -1,2 +1,4 @@
 db.sqlite
 bin/
+.env
+gen/
