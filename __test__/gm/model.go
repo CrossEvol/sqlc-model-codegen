@@ -11,3 +11,12 @@ type FieldMeta struct {
 	Type string `json:"type"`
 	Tag  string `json:"tag"`
 }
+
+type DataMeta struct {
+	Package     string      `json:"package"`
+	PlainModel  *StructMeta `json:"plain_model"`
+	CreateModel *StructMeta `json:"create_model"`
+	UpdateModel *StructMeta `json:"update_model"`
+}
+
+type StructMetasMap = map[string][]*StructMeta

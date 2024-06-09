@@ -48,7 +48,7 @@ func main() {
 	}
 
 	// group [Post, CreatePostParams, UpdatePostParams]
-	groupedStructMetaMap := make(map[string][]*gm.StructMeta)
+	groupedStructMetaMap := make(gm.StructMetasMap)
 	for _, structMeta := range plainStructMetas {
 		groupedStructMetaMap[structMeta.Name] = []*gm.StructMeta{structMeta}
 	}
