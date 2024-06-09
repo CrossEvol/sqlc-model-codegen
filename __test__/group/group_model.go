@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/crossevol/sqlc-model-codegen/__test__/gm"
 	"log"
 	"os"
 	"regexp"
@@ -12,18 +13,6 @@ import (
 const PlainStructsFile = "plain_structs.json"
 const GroupedStructsFile = "grouped_structs.json"
 
-type StructMeta struct {
-	Name       string       `json:"name"`
-	FieldMetas []*FieldMeta `json:"field_meta"`
-	Package    string       `json:"package"`
-}
-
-type FieldMeta struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
-	Tag  string `json:"tag"`
-}
-
 var BlackList = []string{"Queries"}
 
 func main() {
@@ -31,7 +20,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	var structMetas []*StructMeta
+	var structMetas []*gm.StructMeta
 	err = json.Unmarshal(bytes, &structMetas)
 	if err != nil {
 		log.Fatal(err)
@@ -47,7 +36,7 @@ func main() {
 	}
 
 	// filter out Name without Params$
-	var plainStructMetas []*StructMeta
+	var plainStructMetas []*gm.StructMeta
 	for _, structMeta := range structMetas {
 		reg, err := regexp.Compile("Params$")
 		if err != nil {
@@ -59,9 +48,9 @@ func main() {
 	}
 
 	// group [Post, CreatePostParams, UpdatePostParams]
-	groupedStructMetaMap := make(map[string][]*StructMeta)
+	groupedStructMetaMap := make(map[string][]*gm.StructMeta)
 	for _, structMeta := range plainStructMetas {
-		groupedStructMetaMap[structMeta.Name] = []*StructMeta{structMeta}
+		groupedStructMetaMap[structMeta.Name] = []*gm.StructMeta{structMeta}
 	}
 	for key, value := range groupedStructMetaMap {
 		createParams := fmt.Sprintf("Create%sParams", key)
@@ -80,7 +69,7 @@ func main() {
 	// copy the Type from [Model] to [UpdateModelParams], if not have [UpdateModelParams], should pass
 	// only apply for sqlite generated code, because it will use interface{} but not *Type or sql.NullString
 	for key, metas := range groupedStructMetaMap {
-		var target *StructMeta
+		var target *gm.StructMeta
 		for _, meta := range metas {
 			compile, err := regexp.Compile("^Update.*Params$")
 			if err != nil {
@@ -92,7 +81,7 @@ func main() {
 			}
 		}
 
-		var origin *StructMeta
+		var origin *gm.StructMeta
 		for _, meta := range metas {
 			if key == meta.Name {
 				origin = meta

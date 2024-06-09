@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/crossevol/sqlc-model-codegen/__test__/gm"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -10,18 +11,6 @@ import (
 	"os"
 	"path/filepath"
 )
-
-type StructMeta struct {
-	Name      string       `json:"name"`
-	FieldMeta []*FieldMeta `json:"field_meta"`
-	Package   string       `json:"package"`
-}
-
-type FieldMeta struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
-	Tag  string `json:"tag"`
-}
 
 func main() {
 	dir := "internal/database/sqliteDao"
@@ -38,7 +27,7 @@ func main() {
 		fmt.Println(file)
 	}
 
-	var structMetas []*StructMeta
+	var structMetas []*gm.StructMeta
 	for _, file := range files {
 		structMetas = append(structMetas, getStructTypesFromFile(file)...)
 	}
@@ -80,8 +69,8 @@ func getFilesInDirectory(dir string) ([]string, error) {
 	return files, err
 }
 
-func getStructTypesFromFile(filepath string) []*StructMeta {
-	var structMetas []*StructMeta
+func getStructTypesFromFile(filepath string) []*gm.StructMeta {
+	var structMetas []*gm.StructMeta
 
 	// Create a new token file set
 	fset := token.NewFileSet()
@@ -106,15 +95,15 @@ func getStructTypesFromFile(filepath string) []*StructMeta {
 			return true
 		}
 
-		structMeta := &StructMeta{}
+		structMeta := &gm.StructMeta{}
 		// Print the struct name
 		fmt.Printf("Struct: %s\n", typeSpec.Name.Name)
 		structMeta.Name = typeSpec.Name.Name
 
 		// Iterate through the fields of the struct
-		var fieldMetas []*FieldMeta
+		var fieldMetas []*gm.FieldMeta
 		for _, field := range structType.Fields.List {
-			fieldMeta := &FieldMeta{}
+			fieldMeta := &gm.FieldMeta{}
 			// Get the field names
 			for _, name := range field.Names {
 				// Print field name
@@ -134,7 +123,7 @@ func getStructTypesFromFile(filepath string) []*StructMeta {
 			fieldMetas = append(fieldMetas, fieldMeta)
 
 		}
-		structMeta.FieldMeta = fieldMetas
+		structMeta.FieldMetas = fieldMetas
 		structMetas = append(structMetas, structMeta)
 		return false
 	})
