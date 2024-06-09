@@ -3,3 +3,5 @@ bin/
 .env
 gen/
 struct_metas.json
+plain_structs.json
+grouped_structs.json
