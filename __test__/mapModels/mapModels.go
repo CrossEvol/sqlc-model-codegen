@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/crossevol/sqlc-model-codegen/__test__/gm"
+	"github.com/crossevol/sqlc-model-codegen/codegen"
 	"log"
 	"os"
 )
@@ -16,27 +16,13 @@ func main() {
 		log.Fatal(err)
 	}
 	// group [Post, CreatePostParams, UpdatePostParams]
-	groupedStructMetaMap := make(gm.StructMetasMap)
+	groupedStructMetaMap := make(codegen.StructMetasMap)
 	err = json.Unmarshal(bytes, &groupedStructMetaMap)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var dataMetas []*gm.DataMeta
-
-	for key, structMetas := range groupedStructMetaMap {
-		var dataMeta gm.DataMeta
-		for _, structMeta := range structMetas {
-			if structMeta.Name == key {
-				dataMeta.PlainModel = *structMeta
-			} else if structMeta.Name == fmt.Sprintf("Create%sParams", key) {
-				dataMeta.CreateModel = *structMeta
-			} else if structMeta.Name == fmt.Sprintf("Update%sParams", key) {
-				dataMeta.UpdateModel = *structMeta
-			}
-		}
-		dataMetas = append(dataMetas, &dataMeta)
-	}
+	dataMetas := codegen.Map2DataMetas(groupedStructMetaMap)
 
 	// Create or open the PlainStructsFile
 	file, err := os.Create(DataMetasFile)

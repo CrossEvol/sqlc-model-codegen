@@ -1,4 +1,4 @@
-package gm
+package codegen
 
 type StructMeta struct {
 	Name       string       `json:"name"`
