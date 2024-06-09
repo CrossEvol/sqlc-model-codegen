@@ -45,13 +45,13 @@ type {{ .UpdateModel.Name | ToCamel }}DTO struct {
 
 
 {{if IsNotEmpty .CreateModel.Name }}
-func (dto *{{ .CreateModel.Name | ToCamel }}DTO)Map2{{ .CreateModel.Name | ToCamel }}() *{{ .Package }}.{{ .CreateModel.Name | ToCamel }} {
+func (dto *{{ .CreateModel.Name | ToCamel }}DTO)Map2{{ .CreateModel.Name | ToCamel }}Params() *{{ .Package }}.{{ .CreateModel.Name | ToCamel }}Params {
 	{{range $index,$fieldMeta := .CreateModel.FieldMetas }}
 		{{- if OfType $fieldMeta.Type}}
 			{{- $fieldMeta.Name }}:= {{ Convert2InExpr $fieldMeta.Type $fieldMeta.Name }}
 		{{ end -}}
 	{{end}}
-	params := {{ .Package }}.{{ .CreateModel.Name | ToCamel }}{
+	params := {{ .Package }}.{{ .CreateModel.Name | ToCamel }}Params{
         {{range $index,$fieldMeta := .CreateModel.FieldMetas }}
             {{- $fieldMeta.Name }}: {{if OfType $fieldMeta.Type}} {{if IsPtr $fieldMeta.Type}}&{{end}}{{ $fieldMeta.Name }} {{else}} dto.{{ $fieldMeta.Name }} {{ end }} ,
         {{end}}
@@ -61,13 +61,13 @@ func (dto *{{ .CreateModel.Name | ToCamel }}DTO)Map2{{ .CreateModel.Name | ToCam
 {{end}}
 
 {{if IsNotEmpty .UpdateModel.Name }}
-func (dto *{{ .UpdateModel.Name | ToCamel }}DTO)Map2{{ .UpdateModel.Name | ToCamel }}() *{{ .Package }}.{{ .UpdateModel.Name | ToCamel }} {
+func (dto *{{ .UpdateModel.Name | ToCamel }}DTO)Map2{{ .UpdateModel.Name | ToCamel }}Params() *{{ .Package }}.{{ .UpdateModel.Name | ToCamel }}Params {
 	{{range $index,$fieldMeta := .CreateModel.FieldMetas }}
 		{{- if OfType $fieldMeta.Type}}
 			{{- $fieldMeta.Name }}:= {{ Convert2InExpr $fieldMeta.Type $fieldMeta.Name }}
 		{{ end -}}
 	{{end}}
-	params := {{ .Package }}.{{ .UpdateModel.Name | ToCamel }}{
+	params := {{ .Package }}.{{ .UpdateModel.Name | ToCamel }}Params{
         {{range $index,$fieldMeta := .UpdateModel.FieldMetas }}
             {{- $fieldMeta.Name }}: {{if OfType $fieldMeta.Type}} {{if IsPtr $fieldMeta.Type}}&{{end}}{{ $fieldMeta.Name }} {{else}} dto.{{ $fieldMeta.Name }} {{ end }} ,
         {{end}}

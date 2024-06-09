@@ -256,8 +256,10 @@ func Map2DataMetas(groupedStructMetaMap StructMetasMap) []*DataMeta {
 			if structMeta.Name == key {
 				dataMeta.PlainModel = *structMeta
 			} else if structMeta.Name == fmt.Sprintf("Create%sParams", key) {
+				structMeta.Name = fmt.Sprintf("Create%s", key)
 				dataMeta.CreateModel = *structMeta
 			} else if structMeta.Name == fmt.Sprintf("Update%sParams", key) {
+				structMeta.Name = fmt.Sprintf("Update%s", key)
 				dataMeta.UpdateModel = *structMeta
 			}
 			if dataMeta.Package == "" {
