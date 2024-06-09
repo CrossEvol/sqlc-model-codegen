@@ -28,11 +28,11 @@ func main() {
 		var dataMeta gm.DataMeta
 		for _, structMeta := range structMetas {
 			if structMeta.Name == key {
-				dataMeta.PlainModel = structMeta
+				dataMeta.PlainModel = *structMeta
 			} else if structMeta.Name == fmt.Sprintf("Create%sParams", key) {
-				dataMeta.CreateModel = structMeta
+				dataMeta.CreateModel = *structMeta
 			} else if structMeta.Name == fmt.Sprintf("Update%sParams", key) {
-				dataMeta.UpdateModel = structMeta
+				dataMeta.UpdateModel = *structMeta
 			}
 		}
 		dataMetas = append(dataMetas, &dataMeta)

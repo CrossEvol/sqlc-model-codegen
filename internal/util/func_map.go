@@ -52,9 +52,9 @@ func ConvertType(typeName string) string {
 	return newType
 }
 
-func Convert2InExpr(fieldName string) string {
+func Convert2InExpr(fieldType string, fieldName string) string {
 	expr := fieldName
-	switch fieldName {
+	switch fieldType {
 	case "*time.Time":
 		{
 			expr = fmt.Sprintf("time.UnixMilli(dto.%s)", fieldName)
@@ -65,13 +65,15 @@ func Convert2InExpr(fieldName string) string {
 			expr = fmt.Sprintf("time.UnixMilli(dto.%s)", fieldName)
 			break
 		}
+	default:
+		expr = fmt.Sprintf("dto.%s", expr)
 	}
 	return expr
 }
 
-func Convert2OutExpr(fieldName string) string {
+func Convert2OutExpr(fieldType string, fieldName string) string {
 	expr := fieldName
-	switch fieldName {
+	switch fieldType {
 	case "*time.Time":
 		{
 			expr = fmt.Sprintf("entity.%s.UnixMilli()", fieldName)
@@ -82,8 +84,18 @@ func Convert2OutExpr(fieldName string) string {
 			expr = fmt.Sprintf("entity.%s.UnixMilli()", fieldName)
 			break
 		}
+	default:
+		expr = fmt.Sprintf("entity.%s", expr)
 	}
 	return expr
+}
+
+func IsEmpty(v string) bool {
+	return len(v) == 0
+}
+
+func IsNotEmpty(v string) bool {
+	return len(v) != 0
 }
 
 var CreateList = []string{"Create", "create", "CREATE"}
@@ -99,6 +111,12 @@ func TemplateFuncMap() template.FuncMap {
 		"Quote":            Quote,
 		"Add":              func(a, b int) int { return a + b },
 		"Last":             LastFunc,
+		"OfType":           OfType,
+		"ConvertType":      ConvertType,
+		"Convert2InExpr":   Convert2InExpr,
+		"Convert2OutExpr":  Convert2OutExpr,
+		"IsEmpty":          IsEmpty,
+		"IsNotEmpty":       IsNotEmpty,
 	}
 	return funcMap
 }

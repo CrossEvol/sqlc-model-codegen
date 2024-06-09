@@ -13,10 +13,12 @@ type FieldMeta struct {
 }
 
 type DataMeta struct {
-	Package     string      `json:"package"`
-	PlainModel  *StructMeta `json:"plain_model"`
-	CreateModel *StructMeta `json:"create_model"`
-	UpdateModel *StructMeta `json:"update_model"`
+	Package     string     `json:"package"`
+	PlainModel  StructMeta `json:"plain_model"`
+	CreateModel StructMeta `json:"create_model"`
+	UpdateModel StructMeta `json:"update_model"`
 }
+
+type DataMetas = []*DataMeta
 
 type StructMetasMap = map[string][]*StructMeta
