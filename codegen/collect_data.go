@@ -12,6 +12,21 @@ import (
 	"strings"
 )
 
+// GetPackageName reads a *.go file from the given file path and returns the package name
+func GetPackageName(filePath string) (string, error) {
+	// Create a new token file set (required by the parser)
+	fset := token.NewFileSet()
+
+	// Parse the file
+	node, err := parser.ParseFile(fset, filePath, nil, parser.PackageClauseOnly)
+	if err != nil {
+		return "", err
+	}
+
+	// Return the package name
+	return node.Name.Name, nil
+}
+
 func CollectStructMetas(dir string) ([]*StructMeta, error) {
 	// Get list of files
 	files, err := getFilesInDirectory(dir)
@@ -51,7 +66,6 @@ func getFilesInDirectory(dir string) ([]string, error) {
 
 func getStructTypesFromFile(filepath string) []*StructMeta {
 	var structMetas []*StructMeta
-
 	// Create a new token file set
 	fset := token.NewFileSet()
 
@@ -104,6 +118,13 @@ func getStructTypesFromFile(filepath string) []*StructMeta {
 
 		}
 		structMeta.FieldMetas = fieldMetas
+
+		packageName, err := GetPackageName(filepath)
+		if err != nil {
+			log.Fatal(err)
+		}
+		structMeta.Package = packageName
+
 		structMetas = append(structMetas, structMeta)
 		return false
 	})
@@ -238,6 +259,9 @@ func Map2DataMetas(groupedStructMetaMap StructMetasMap) []*DataMeta {
 				dataMeta.CreateModel = *structMeta
 			} else if structMeta.Name == fmt.Sprintf("Update%sParams", key) {
 				dataMeta.UpdateModel = *structMeta
+			}
+			if dataMeta.Package == "" {
+				dataMeta.Package = structMeta.Package
 			}
 		}
 		dataMetas = append(dataMetas, &dataMeta)

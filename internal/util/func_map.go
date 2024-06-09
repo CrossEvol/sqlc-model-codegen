@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/iancoleman/strcase"
 	"github.com/jinzhu/inflection"
+	"regexp"
 	"text/template"
 )
 
@@ -98,6 +99,12 @@ func IsNotEmpty(v string) bool {
 	return len(v) != 0
 }
 
+func IsPtr(v string) bool {
+	// Regular expression pattern
+	pattern := regexp.MustCompile(`^\*`)
+	return pattern.MatchString(v)
+}
+
 var CreateList = []string{"Create", "create", "CREATE"}
 
 func TemplateFuncMap() template.FuncMap {
@@ -117,6 +124,7 @@ func TemplateFuncMap() template.FuncMap {
 		"Convert2OutExpr":  Convert2OutExpr,
 		"IsEmpty":          IsEmpty,
 		"IsNotEmpty":       IsNotEmpty,
+		"IsPtr":            IsPtr,
 	}
 	return funcMap
 }
