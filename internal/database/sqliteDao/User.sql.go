@@ -25,7 +25,7 @@ func (q *Queries) CountUsers(ctx context.Context) (int64, error) {
 }
 
 const CreateUser = `-- name: CreateUser :execresult
-INSERT INTO User (name, password, email, emailVerified, image, role)
+INSERT INTO User (name, password, email, email_verified, image, role)
 VALUES (?, ?, ?, ?, ?, ?)
 `
 
@@ -33,7 +33,7 @@ type CreateUserParams struct {
 	Name          *string    `db:"name" json:"name"`
 	Password      *string    `db:"password" json:"password"`
 	Email         *string    `db:"email" json:"email"`
-	Emailverified *time.Time `db:"emailverified" json:"emailverified"`
+	EmailVerified *time.Time `db:"email_verified" json:"email_verified"`
 	Image         *string    `db:"image" json:"image"`
 	Role          string     `db:"role" json:"role"`
 }
@@ -43,7 +43,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (sql.Res
 		arg.Name,
 		arg.Password,
 		arg.Email,
-		arg.Emailverified,
+		arg.EmailVerified,
 		arg.Image,
 		arg.Role,
 	)
@@ -61,7 +61,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id string) error {
 }
 
 const GetUser = `-- name: GetUser :one
-SELECT id, name, password, email, emailverified, image, role
+SELECT id, name, password, email, email_verified, image, role
 FROM User
 WHERE id = ?
 LIMIT 1
@@ -75,7 +75,7 @@ func (q *Queries) GetUser(ctx context.Context, id string) (User, error) {
 		&i.Name,
 		&i.Password,
 		&i.Email,
-		&i.Emailverified,
+		&i.EmailVerified,
 		&i.Image,
 		&i.Role,
 	)
@@ -83,7 +83,7 @@ func (q *Queries) GetUser(ctx context.Context, id string) (User, error) {
 }
 
 const GetUsers = `-- name: GetUsers :many
-SELECT id, name, password, email, emailverified, image, role
+SELECT id, name, password, email, email_verified, image, role
 FROM User
 `
 
@@ -101,7 +101,7 @@ func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
 			&i.Name,
 			&i.Password,
 			&i.Email,
-			&i.Emailverified,
+			&i.EmailVerified,
 			&i.Image,
 			&i.Role,
 		); err != nil {
@@ -119,7 +119,7 @@ func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
 }
 
 const GetUsersByIds = `-- name: GetUsersByIds :many
-SELECT id, name, password, email, emailverified, image, role
+SELECT id, name, password, email, email_verified, image, role
 FROM User
 WHERE id IN (/*SLICE:ids*/?)
 `
@@ -148,7 +148,7 @@ func (q *Queries) GetUsersByIds(ctx context.Context, ids []string) ([]User, erro
 			&i.Name,
 			&i.Password,
 			&i.Email,
-			&i.Emailverified,
+			&i.EmailVerified,
 			&i.Image,
 			&i.Role,
 		); err != nil {
@@ -170,7 +170,7 @@ UPDATE User
 SET name          = CASE WHEN ? IS NOT NULL THEN ? ELSE name END,
     password      = CASE WHEN ? IS NOT NULL THEN ? ELSE password END,
     email         = CASE WHEN ? IS NOT NULL THEN ? ELSE email END,
-    emailVerified = CASE WHEN ? IS NOT NULL THEN ? ELSE emailVerified END,
+    email_verified = CASE WHEN ? IS NOT NULL THEN ? ELSE email_verified END,
     image         = CASE WHEN ? IS NOT NULL THEN ? ELSE image END,
     role          = CASE WHEN ? IS NOT NULL THEN ? ELSE role END
 WHERE id = ?
@@ -180,7 +180,7 @@ type UpdateUserParams struct {
 	Name          interface{} `db:"name" json:"name"`
 	Password      interface{} `db:"password" json:"password"`
 	Email         interface{} `db:"email" json:"email"`
-	EmailVerified interface{} `db:"emailVerified" json:"email_verified"`
+	EmailVerified interface{} `db:"email_verified" json:"email_verified"`
 	Image         interface{} `db:"image" json:"image"`
 	Role          interface{} `db:"role" json:"role"`
 	ID            string      `db:"id" json:"id"`

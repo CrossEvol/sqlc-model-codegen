@@ -1,5 +1,5 @@
 -- Insert records into User table
-INSERT INTO User (name, password, email, emailVerified, image, role)
+INSERT INTO User (name, password, email, email_verified, image, role)
 VALUES ('Alice', 'password1', 'alice@example.com', '2023-06-01 10:00:00', 'alice.jpg', 'ADMIN'),
        ('Bob', 'password2', 'bob@example.com', '2023-06-02 11:00:00', 'bob.jpg', 'USER'),
        ('Charlie', 'password3', 'charlie@example.com', '2023-06-03 12:00:00', 'charlie.jpg', 'USER'),

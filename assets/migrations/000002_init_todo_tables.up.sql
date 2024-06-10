@@ -5,7 +5,7 @@ CREATE TABLE User
     name          TEXT,
     password      TEXT,
     email         TEXT UNIQUE,
-    emailVerified DATETIME,
+    email_verified DATETIME,
     image         TEXT,
     role          TEXT CHECK ( role in ('ADMIN', 'USER', 'GUEST', 'UNKNOWN') ) NOT NULL DEFAULT 'USER'
 );

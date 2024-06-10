@@ -52,3 +52,69 @@ WHERE id = ?;
 ```
 
 the table name in queries/ should be same as in the migrations/
+
+# Wrong in types of UpdateXxxParams
+`User.dto.go`
+```go
+func (dto *UpdateUserDTO)Map2UpdateUserParams() *sqliteDao.UpdateUserParams {
+	Emailverified:= time.UnixMilli(dto.Emailverified)
+		
+	params := sqliteDao.UpdateUserParams{
+        Name:  dto.Name  ,
+        Password:  dto.Password  ,
+        Email:  dto.Email  ,
+        EmailVerified:  dto.EmailVerified  ,
+        Image:  dto.Image  ,
+        Role:  dto.Role  ,
+        ID:  dto.ID  ,
+        
+    }
+    return &params
+}
+
+```
+the name `Emailverified` is not compatible with `EmailVerified`
+
+`internal/database/sqliteDao/models.go`
+```go
+type User struct {
+	ID            string     `db:"id" json:"id"`
+	Name          *string    `db:"name" json:"name"`
+	Password      *string    `db:"password" json:"password"`
+	Email         *string    `db:"email" json:"email"`
+	Emailverified *time.Time `db:"emailverified" json:"emailverified"`
+	Image         *string    `db:"image" json:"image"`
+	Role          string     `db:"role" json:"role"`
+}
+```
+
+`internal/database/sqliteDao/User.sql.go`
+```go
+type UpdateUserParams struct {
+	Name          interface{} `db:"name" json:"name"`
+	Password      interface{} `db:"password" json:"password"`
+	Email         interface{} `db:"email" json:"email"`
+	EmailVerified interface{} `db:"emailVerified" json:"email_verified"`
+	Image         interface{} `db:"image" json:"image"`
+	Role          interface{} `db:"role" json:"role"`
+	ID            string      `db:"id" json:"id"`
+}
+```
+
+the wrong will happen in `codegen/collect_data.go`
+```go
+if target != nil && origin != nil {
+    for _, targetFieldMeta := range target.FieldMetas {
+        for _, originFieldMeta := range origin.FieldMetas {
+            if targetFieldMeta.Name == originFieldMeta.Name && targetFieldMeta.Type != originFieldMeta.Type && targetFieldMeta.Type == "*ast.InterfaceType" {
+                targetFieldMeta.Type = originFieldMeta.Type
+                if strings.Index(targetFieldMeta.Type, "*") == -1 {
+                    targetFieldMeta.Type = "*" + targetFieldMeta.Type
+                }
+            }
+        }
+    }
+}
+```
+when compare the name, should use lowerCamelCase 
+when define the column name in the table, should use the snake_case naming strategy

@@ -6,6 +6,8 @@ import (
 )
 
 func TestCodegen(t *testing.T) {
+	kDebug = false
+
 	err := RunCodeGen("D:\\GOLANG_CODE\\sqlc-model-codegen\\internal\\database\\sqliteDao", "D:\\GOLANG_CODE\\sqlc-model-codegen\\curdGen")
 	require.Nil(t, err)
 }

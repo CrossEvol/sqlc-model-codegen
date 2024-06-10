@@ -2,6 +2,7 @@ package codegen
 
 import (
 	"fmt"
+	"github.com/iancoleman/strcase"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -11,6 +12,9 @@ import (
 	"regexp"
 	"strings"
 )
+
+// use for debug log
+var kDebug = false
 
 // GetPackageName reads a *.go file from the given file path and returns the package name
 func GetPackageName(filePath string) (string, error) {
@@ -233,7 +237,12 @@ func GroupStructMetas(structMetas []*StructMeta) ([]*StructMeta, StructMetasMap,
 		if target != nil && origin != nil {
 			for _, targetFieldMeta := range target.FieldMetas {
 				for _, originFieldMeta := range origin.FieldMetas {
-					if targetFieldMeta.Name == originFieldMeta.Name && targetFieldMeta.Type != originFieldMeta.Type && targetFieldMeta.Type == "*ast.InterfaceType" {
+					if kDebug {
+						fmt.Println(fmt.Sprintf("targetFieldMeta.Name(%s) == originFieldMeta.Name(%s) → %v", targetFieldMeta.Name, originFieldMeta.Name, targetFieldMeta.Name == originFieldMeta.Name))
+						fmt.Println(fmt.Sprintf("targetFieldMeta.Type(%s) != originFieldMeta.Type(%s) → %v", targetFieldMeta.Type, originFieldMeta.Type, targetFieldMeta.Type != originFieldMeta.Type))
+						fmt.Println(fmt.Sprintf(`targetFieldMeta.Type(%s) == "*ast.InterfaceType" → %v`, targetFieldMeta.Type, targetFieldMeta.Type == "*ast.InterfaceType"))
+					}
+					if strcase.ToLowerCamel(targetFieldMeta.Name) == strcase.ToLowerCamel(originFieldMeta.Name) && targetFieldMeta.Type != originFieldMeta.Type && targetFieldMeta.Type == "*ast.InterfaceType" {
 						targetFieldMeta.Type = originFieldMeta.Type
 						if strings.Index(targetFieldMeta.Type, "*") == -1 {
 							targetFieldMeta.Type = "*" + targetFieldMeta.Type

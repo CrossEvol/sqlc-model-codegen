@@ -74,7 +74,7 @@ type User struct {
 	Name          *string    `db:"name" json:"name"`
 	Password      *string    `db:"password" json:"password"`
 	Email         *string    `db:"email" json:"email"`
-	Emailverified *time.Time `db:"emailverified" json:"emailverified"`
+	EmailVerified *time.Time `db:"email_verified" json:"email_verified"`
 	Image         *string    `db:"image" json:"image"`
 	Role          string     `db:"role" json:"role"`
 }
