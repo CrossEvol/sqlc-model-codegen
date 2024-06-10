@@ -11,7 +11,13 @@ import (
 )
 
 const DtoTemplate = `
-package curdGen
+package {{ .DestPackage }}
+
+{{if IsNotEmpty .Imports}}import (
+	{{- range $_,$import := .Imports }}
+		"{{ $import }}"
+	{{- end }}
+){{ end }}
 
 {{if IsNotEmpty .PlainModel.Name }}
 type {{ .PlainModel.Name | ToCamel }}DTO struct {
@@ -88,11 +94,18 @@ func Map2{{ .PlainModel.Name | ToCamel }}DTO(entity *{{ .Package }}.{{ .PlainMod
 {{end}}
 `
 
-func CrudGen(dataMetas DataMetas, destDir string) error {
+func CrudGen(dataMetas DataMetas, destDir string, imports []string) error {
+	lastIndex := strings.LastIndex(destDir, string(filepath.Separator))
+	destPackage := destDir[lastIndex+1:]
+
 	tmpl := template.Must(template.New("CrudTemplate").Funcs(util.TemplateFuncMap()).Parse(DtoTemplate))
 
 	for _, dataMeta := range dataMetas {
-		fmt.Println(dataMeta.PlainModel.Name)
+		dataMeta.DestPackage = destPackage
+		dataMeta.Imports = imports
+		if kDebug {
+			fmt.Println(dataMeta.PlainModel.Name)
+		}
 		var name = dataMeta.PlainModel.Name
 		var content strings.Builder
 		err := tmpl.Execute(&content, dataMeta)

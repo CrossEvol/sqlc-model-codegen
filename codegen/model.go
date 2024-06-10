@@ -14,6 +14,8 @@ type FieldMeta struct {
 
 type DataMeta struct {
 	Package     string     `json:"package"`
+	DestPackage string     `json:"dest_package"`
+	Imports     []string   `json:"imports"`
 	PlainModel  StructMeta `json:"plain_model"`
 	CreateModel StructMeta `json:"create_model"`
 	UpdateModel StructMeta `json:"update_model"`

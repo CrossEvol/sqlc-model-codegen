@@ -91,12 +91,20 @@ func Convert2OutExpr(fieldType string, fieldName string) string {
 	return expr
 }
 
-func IsEmpty(v string) bool {
-	return len(v) == 0
+func IsEmpty(v any) bool {
+	s, ok := v.(string)
+	if ok {
+		return len(s) == 0
+	}
+	arr, ok := v.([]any)
+	if ok {
+		return len(arr) == 0
+	}
+	return false
 }
 
-func IsNotEmpty(v string) bool {
-	return len(v) != 0
+func IsNotEmpty(v any) bool {
+	return !IsEmpty(v)
 }
 
 func IsPtr(v string) bool {

@@ -1,6 +1,6 @@
 package codegen
 
-func RunCodeGen(sourceDir string, destDir string) error {
+func RunCodeGen(sourceDir string, destDir string, imports []string) error {
 	structMetas, err := CollectStructMetas(sourceDir)
 	if err != nil {
 		return err
@@ -10,7 +10,7 @@ func RunCodeGen(sourceDir string, destDir string) error {
 		return err
 	}
 	dataMetas := Map2DataMetas(structMetasMap)
-	err = CrudGen(dataMetas, destDir)
+	err = CrudGen(dataMetas, destDir, imports)
 	if err != nil {
 		return err
 	}

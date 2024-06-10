@@ -1,4 +1,10 @@
-package curdGen
+package {{ .DestPackage }}
+
+{{if IsNotEmpty .Imports}}import (
+	{{- range $_,$import := .Imports }}
+		"{{ $import }}"
+	{{- end }}
+){{ end }}
 
 {{if IsNotEmpty .PlainModel.Name }}
 type {{ .PlainModel.Name | ToCamel }}DTO struct {
@@ -33,30 +39,43 @@ type {{ .UpdateModel.Name | ToCamel }}DTO struct {
 
 {{if IsNotEmpty .CreateModel.Name }}
 func (dto *{{ .CreateModel.Name | ToCamel }}DTO)Map2{{ .CreateModel.Name | ToCamel }}Params() *{{ .Package }}.{{ .CreateModel.Name | ToCamel }}Params {
-    return &{{ .Package }}.{{ .CreateModel.Name | ToCamel }}Params{
+	{{range $index,$fieldMeta := .CreateModel.FieldMetas }}
+		{{- if OfType $fieldMeta.Type}}
+			{{- $fieldMeta.Name }}:= {{ Convert2InExpr $fieldMeta.Type $fieldMeta.Name }}
+		{{ end -}}
+	{{end}}
+	params := {{ .Package }}.{{ .CreateModel.Name | ToCamel }}Params{
         {{range $index,$fieldMeta := .CreateModel.FieldMetas }}
-            {{- $fieldMeta.Name }}: {{if OfType $fieldMeta.Type}} {{ Convert2InExpr $fieldMeta.Name }} {{else}} dto.{{ $fieldMeta.Name }} {{ end }} ,
+            {{- $fieldMeta.Name }}: {{if OfType $fieldMeta.Type}} {{if IsPtr $fieldMeta.Type}}&{{end}}{{ $fieldMeta.Name }} {{else}} dto.{{ $fieldMeta.Name }} {{ end }} ,
         {{end}}
     }
+    return &params
 }
 {{end}}
 
 {{if IsNotEmpty .UpdateModel.Name }}
 func (dto *{{ .UpdateModel.Name | ToCamel }}DTO)Map2{{ .UpdateModel.Name | ToCamel }}Params() *{{ .Package }}.{{ .UpdateModel.Name | ToCamel }}Params {
-    return &{{ .Package }}.{{ .UpdateModel.Name | ToCamel }}Params{
+	{{range $index,$fieldMeta := .CreateModel.FieldMetas }}
+		{{- if OfType $fieldMeta.Type}}
+			{{- $fieldMeta.Name }}:= {{ Convert2InExpr $fieldMeta.Type $fieldMeta.Name }}
+		{{ end -}}
+	{{end}}
+	params := {{ .Package }}.{{ .UpdateModel.Name | ToCamel }}Params{
         {{range $index,$fieldMeta := .UpdateModel.FieldMetas }}
-            {{- $fieldMeta.Name }}: {{if OfType $fieldMeta.Type}} {{ Convert2InExpr $fieldMeta.Name }} {{else}} dto.{{ $fieldMeta.Name }} {{ end }} ,
+            {{- $fieldMeta.Name }}: {{if OfType $fieldMeta.Type}} {{if IsPtr $fieldMeta.Type}}&{{end}}{{ $fieldMeta.Name }} {{else}} dto.{{ $fieldMeta.Name }} {{ end }} ,
         {{end}}
     }
+    return &params
 }
 {{end}}
 
 {{if IsNotEmpty .PlainModel.Name }}
-func (entity *{{ .Package }}.{{ .PlainModel.Name | ToCamel }})Map2{{ .PlainModel.Name | ToCamel }}DTO() *{{ .PlainModel.Name | ToCamel }}DTO {
-    return &{{ .PlainModel.Name | ToCamel }}DTO{
+func Map2{{ .PlainModel.Name | ToCamel }}DTO(entity *{{ .Package }}.{{ .PlainModel.Name | ToCamel }}) *{{ .PlainModel.Name | ToCamel }}DTO {
+	dto := {{ .PlainModel.Name | ToCamel }}DTO{
         {{range $index,$fieldMeta := .PlainModel.FieldMetas }}
-            {{- $fieldMeta.Name }}: {{if OfType $fieldMeta.Type}} {{ Convert2OutExpr $fieldMeta.Name }} {{else}} entity.{{ $fieldMeta.Name }} {{ end }} ,
+            {{- $fieldMeta.Name }}: {{if OfType $fieldMeta.Type}} {{ Convert2OutExpr $fieldMeta.Type $fieldMeta.Name }} {{else}} entity.{{ $fieldMeta.Name }} {{ end }} ,
         {{end}}
     }
+    return &dto
 }
 {{end}}
